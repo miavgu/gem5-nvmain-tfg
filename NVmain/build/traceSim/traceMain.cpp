@@ -1,0 +1,1 @@
+/home/miguel/gem5-nvmain-tfg/NVmain/traceSim/traceMain.cpp
