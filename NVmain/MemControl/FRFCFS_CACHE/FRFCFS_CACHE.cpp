@@ -155,7 +155,6 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
         return false;
     }
 
-    /*
     req->arrivalCycle = GetEventQueue()->GetCurrentCycle();
     if( req->type == READ )
     {
@@ -185,7 +184,6 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
                                  req->data.rawData, req->data.GetSize());
         }
     }
-    */
     
     /* 
      *  Just push back the read/write. It's easier to inject dram commands than break it up
