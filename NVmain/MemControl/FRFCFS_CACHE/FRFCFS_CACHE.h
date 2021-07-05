@@ -31,50 +31,53 @@
 *                     Website: http://www.cse.psu.edu/~poremba/ )
 *******************************************************************************/
 
-#include "MemControl/MemoryControllerFactory.h"
-#include "MemControl/FCFS/FCFS.h"
-#include "MemControl/FRFCFS/FRFCFS.h"
-#include "MemControl/FRFCFS-WQF/FRFCFS-WQF.h"
-#include "MemControl/PerfectMemory/PerfectMemory.h"
-#include "MemControl/DRAMCache/DRAMCache.h"
-#include "MemControl/LH-Cache/LH-Cache.h"
-#include "MemControl/LO-Cache/LO-Cache.h"
-#include "MemControl/PredictorDRC/PredictorDRC.h"
-#include "MemControl/FRFCFS_CACHE/FRFCFS_CACHE.h"
+#ifndef __FRFCFS_CACHE_H__
+#define __FRFCFS_CACHE_H__
 
-#include <iostream>
+#include "src/MemoryController.h"
+#include "MemControl/FRFCFS_CACHE/MySRAMCache/MySRAMCache.h"
+#include <deque>
 
-using namespace NVM;
+namespace NVM {
 
-MemoryController *MemoryControllerFactory::CreateNewController( std::string controller ) 
+class FRFCFS_CACHE : public MemoryController
 {
-    MemoryController *memoryController = NULL;
+  public:
+    FRFCFS_CACHE( );
+    ~FRFCFS_CACHE( );
 
-    if( controller == "" )
-        std::cout << "NVMain: MEM_CTL is not set in configuration file!" << std::endl;
+    bool IssueCommand( NVMainRequest *req );
+    bool IsIssuable( NVMainRequest *request, FailReason *fail = NULL );
+    bool RequestComplete( NVMainRequest * request );
 
-    if( controller == "FCFS" )
-        memoryController = new FCFS( );
-    else if( controller == "FRFCFS" )
-        memoryController = new FRFCFS( );
-    else if( controller == "FRFCFS-WQF" || controller == "FRFCFS_WQF" )
-        memoryController = new FRFCFS_WQF( );
-    else if( controller == "FRFCFS_CACHE" || controller == "FRFCFS-CACHE" )
-        memoryController = new FRFCFS_CACHE( );
-    else if( controller == "PerfectMemory" )
-        memoryController = new PerfectMemory( );
-    else if( controller == "DRC" )
-        memoryController = new DRAMCache( );
-    else if( controller == "LH_Cache" )
-        memoryController = new LH_Cache( );
-    else if( controller == "LO_Cache" )
-        memoryController = new LO_Cache( );
-    else if( controller == "PredictorDRC" )
-        memoryController = new PredictorDRC( );
+    void SetConfig( Config *conf, bool createChildren = true );
 
-    if( memoryController == NULL )
-        std::cout << "NVMain: Unknown memory controller `" 
-            << controller << "'." << std::endl;
+    void Cycle( ncycle_t steps );
 
-    return memoryController;
-}
+    void RegisterStats( );
+    void CalculateStats( );
+
+  private:
+    NVMTransactionQueue *memQueue;
+
+    /* Cached Configuration Variables*/
+    uint64_t queueSize;
+
+    /* Stats */
+    uint64_t measuredLatencies, measuredQueueLatencies, measuredTotalLatencies;
+    double averageLatency, averageQueueLatency, averageTotalLatency;
+    uint64_t mem_reads, mem_writes;
+    uint64_t rb_hits;
+    uint64_t rb_miss;
+    uint64_t starvation_precharges;
+    uint64_t write_pauses;
+    
+    /* Cache */
+    MySRAMCache *DataCache = new MySRAMCache(18, 20);
+    /* Cache Stats */
+    uint64_t myCacheTries, myCacheHits, myCacheWrites;
+};
+
+};
+
+#endif
