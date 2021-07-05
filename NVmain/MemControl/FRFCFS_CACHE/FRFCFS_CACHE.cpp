@@ -158,11 +158,11 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
     req->arrivalCycle = GetEventQueue()->GetCurrentCycle();
     if( req->type == READ )
     {
-        mem_reads++;
         ++myCacheTries;
         if(DataCache->hasData(req->address.GetPhysicalAddress(),
            req->data.GetSize()))
     	{
+            mem_reads++;
 	        ++myCacheHits;
             uint64_t proximoAcceso = req->arrivalCycle + DataCache->getLatenciaCiclos();
 	        req->data.rawData = DataCache->readData(req->address.GetPhysicalAddress(),
