@@ -100,7 +100,7 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
 
   while(porEscribir)
   {
-    if(hasData(tag,porEscribir)) //Actulizar una linea ya existente
+    if(hasData(tag,porEscribir)) //Actualizar una linea ya existente
     {
       //Leer datos de la dirección (alineada a TAMANYO Bytes)
       std::vector<MySRAMCacheEntry>linea = memoria[tag];
