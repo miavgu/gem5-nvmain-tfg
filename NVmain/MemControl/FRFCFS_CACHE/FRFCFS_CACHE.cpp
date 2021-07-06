@@ -160,8 +160,10 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
     {
         ++myCacheTries;
 
-        if(DataCache->hasData(req->address.GetPhysicalAddress(),
-           req->data.GetSize()))
+        uint64_t issueReqAddress = req->address.GetPhysicalAddress();
+        uint64_t issueReqSize = req->data.GetSize();
+        if(DataCache->hasData(issueReqAddress,
+           issueReqSize))
     	{
             mem_reads++;
 	        ++myCacheHits;

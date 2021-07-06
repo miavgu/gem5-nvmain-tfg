@@ -13,7 +13,6 @@ bool MySRAMCache::hasData(uint64_t addr, uint64_t size)
   uint64_t desplz = moddedAddr & mascaraDesplz;
   uint64_t porLeer = size;
   std::vector<MySRAMCacheEntry> linea;
-
   while(porLeer)
   {
     if(!memoria.count(tag))
