@@ -159,18 +159,23 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
     if( req->type == READ )
     {
         ++myCacheTries;
+
         if(DataCache->hasData(req->address.GetPhysicalAddress(),
            req->data.GetSize()))
     	{
             mem_reads++;
 	        ++myCacheHits;
-            uint64_t proximoAcceso = req->arrivalCycle + DataCache->getLatenciaCiclos();
-	        req->data.rawData = DataCache->readData(req->address.GetPhysicalAddress(),
-	                                req->data.GetSize());
+            uint64_t proximoAcceso = req->arrivalCycle
+                                + DataCache->getLatenciaCiclos();
+
+	        req->data.rawData = DataCache->readData(
+                                req->address.GetPhysicalAddress(),
+	                            req->data.GetSize());
+
 	        assert(req->data.rawData != nullptr);
 	        
 	        GetEventQueue()->InsertEvent(EventResponse, this, req,
-	                proximoAcceso);
+	                            proximoAcceso);
 	                
             return true;
         }
@@ -181,7 +186,8 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
         {
             ++myCacheWrites;
             DataCache->writeData(req->address.GetPhysicalAddress(),
-                                 req->data.rawData, req->data.GetSize());
+                                req->data.rawData,
+                                req->data.GetSize());
         }
     }
     
