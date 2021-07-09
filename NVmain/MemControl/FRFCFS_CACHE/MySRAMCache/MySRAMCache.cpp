@@ -70,7 +70,7 @@ uint8_t* MySRAMCache::readData(uint64_t addr, uint64_t size)
     posBaseRV = i;
 
     //Actualizar LRU
-    LRU->push(tag);
+    //LRU->push(tag);
     
     /*
     *   Actualizar la dirección añadiendo los bytes que hemos escrito + 1
@@ -122,7 +122,7 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
       memoria[tag] = linea;
 
       //Actualizar LRU
-      LRU->push(tag);
+      //LRU->push(tag);
 
       /*
       *   Actualizar la dirección añadiendo los bytes que hemos escrito + 1
@@ -155,8 +155,16 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
        */
       if(currSize + 1 > maxSize)
       {
-        uint64_t toBeReplaced = LRU->peekBottom();
-        invalidateData(toBeReplaced);
+        uint64_t indexToBeReplaced = rand() % maxSize; //[0, maxSize - 1] 
+        auto it = memoria.begin();
+        auto end = memoria.end();
+        uint64_t curIndex = 0;
+        while((std::next(it) != end) && curIndex != indexToBeReplaced)
+        {
+          ++it;
+          ++curIndex;
+        }
+        invalidateData(it->first);
 
         assert(currSize < maxSize);
       }
@@ -168,7 +176,7 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
       memoria[tag] = wv;
 
       //Actualizar LRU
-      LRU->push(tag);
+      //LRU->push(tag);
 
       /*
       *   Actualizar la dirección añadiendo los bytes que hemos escrito + 1
@@ -194,8 +202,8 @@ bool MySRAMCache::invalidateData(uint64_t addr)
     return false;
 
   /* Eliminar de LRU.*/
-  LRU->mvToHead(tag);
-  LRU->pop();
+  //LRU->mvToHead(tag);
+  //LRU->pop();
 
   /* Eliminar de memoria*/
   memoria.erase(tag);

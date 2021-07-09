@@ -73,7 +73,7 @@ class FRFCFS_CACHE : public MemoryController
     uint64_t write_pauses;
     
     /* Cache */
-    MySRAMCache *DataCache = new MySRAMCache(18, 20);
+    MySRAMCache *DataCache = new MySRAMCache(22, 4);
     /* Cache Stats */
     uint64_t myCacheTries, myCacheHits, myCacheWrites;
 };

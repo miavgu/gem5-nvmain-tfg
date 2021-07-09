@@ -70,9 +70,10 @@ class MySRAMCache
   public:
     MySRAMCache( uint64_t n, uint64_t lat ) : currSize(0)
     {
-      LRU = new MyUIntStack();
+      //LRU = new MyUIntStack();
       maxSize = pow(2, n);
       latenciaCiclos = lat;
+      srand(2021);
     };
     ~MySRAMCache( );
 
@@ -124,7 +125,7 @@ class MySRAMCache
     inline uint64_t getLatenciaCiclos(){return latenciaCiclos;}
   private:
     memoria_cache memoria;                        //Variable que almacena los datos
-    MyUIntStack *LRU;                             //Variable que representa LRU
+    //MyUIntStack *LRU;                             //Variable que representa LRU
     uint64_t mascaraDir =    0xFFFFFFFFFFFFFFC0;  //Variable para la etiqueta
     uint64_t mascaraDesplz = 0x000000000000003F;  //Variable para el desplazamiento
     uint64_t maxSize, currSize;                   //Variables para gestionar el tamaño

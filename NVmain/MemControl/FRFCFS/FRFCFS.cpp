@@ -54,7 +54,7 @@ FRFCFS::FRFCFS( )
     std::cout << "Created a First Ready First Come First Serve memory controller!"
         << std::endl;
 
-    queueSize = 32;
+    queueSize = 128;
     starvationThreshold = 4;
 
     averageLatency = 0.0f;
