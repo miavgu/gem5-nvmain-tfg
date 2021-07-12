@@ -154,20 +154,16 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
        * habría que sustituir una existente por la nueva
        */
       if(currSize + 1 > maxSize)
-      {
-        uint64_t indexToBeReplaced = rand() % maxSize; //[0, maxSize - 1] 
-        auto it = memoria.begin();
-        auto end = memoria.end();
-        uint64_t curIndex = 0;
-        while((std::next(it) != end) && curIndex != indexToBeReplaced)
-        {
-          ++it;
-          ++curIndex;
-        }
-        invalidateData(it->first);
+      { 
+        uint64_t indexToBeReplaced = rand() % maxSize; //[0, maxSize - 1]
+        uint64_t tagToBeReplaced = dirArray[indexToBeReplaced]; 
+        invalidateData(tagToBeReplaced);
+        dirArray[indexToBeReplaced] = tag; 
 
         assert(currSize < maxSize);
       }
+      else
+        dirArray[currSize] = tag;
 
       //Incrementar el tamaño
       ++currSize;

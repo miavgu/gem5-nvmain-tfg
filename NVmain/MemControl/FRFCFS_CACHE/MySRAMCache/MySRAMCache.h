@@ -74,6 +74,7 @@ class MySRAMCache
       maxSize = pow(2, n);
       latenciaCiclos = lat;
       srand(2021);
+      dirArray.resize(maxSize);
     };
     ~MySRAMCache( );
 
@@ -130,5 +131,6 @@ class MySRAMCache
     uint64_t mascaraDesplz = 0x000000000000003F;  //Variable para el desplazamiento
     uint64_t maxSize, currSize;                   //Variables para gestionar el tamaño
     uint64_t latenciaCiclos;                      //Variable que contiene la latencia
+    std::vector<uint64_t> dirArray;
   protected:
 };

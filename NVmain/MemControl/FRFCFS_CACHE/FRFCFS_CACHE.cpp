@@ -179,13 +179,13 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
 	        GetEventQueue()->InsertEvent(EventResponse, this, req,
 	                            proximoAcceso);
             
-            if( GetEventQueue( )->FindEvent(EventCycle, this,
+            /*if( GetEventQueue( )->FindEvent(EventCycle, this,
                                             NULL, proximoAcceso ) == NULL )
             {
                 GetEventQueue( )->InsertEvent(  EventCycle, this,
                                                 proximoAcceso, NULL,
                                                 transactionQueuePriority );
-            }        
+            }*/        
             return true;
         }
     }
