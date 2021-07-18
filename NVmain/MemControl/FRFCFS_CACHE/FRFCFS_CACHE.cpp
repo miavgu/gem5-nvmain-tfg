@@ -171,8 +171,8 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
                                 + DataCache->getLatenciaCiclos();
 
 	        req->data.rawData = DataCache->readData(
-                                req->address.GetPhysicalAddress(),
-	                            req->data.GetSize());
+                                issueReqAddress,
+	                            issueReqSize);
 
 	        assert(req->data.rawData != nullptr);
 	        

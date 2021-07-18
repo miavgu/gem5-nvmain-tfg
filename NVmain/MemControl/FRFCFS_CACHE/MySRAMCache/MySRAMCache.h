@@ -112,7 +112,7 @@ class MySRAMCache
     * @param addr Dirección cuya palabra se quiere invalidar.
     * @return TRUE si no ha habido problemas. FALSE si no.
     */
-    bool invalidateData(uint64_t addr);
+    bool invalidateData(uint64_t addr, uint64_t size);
 
    /*
     * Getters y Setters
