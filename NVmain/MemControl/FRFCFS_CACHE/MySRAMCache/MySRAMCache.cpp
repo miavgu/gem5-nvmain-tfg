@@ -12,35 +12,21 @@ bool MySRAMCache::hasData(uint64_t addr, uint64_t size)
   uint64_t tag = moddedAddr & mascaraDir;
   uint64_t desplz = moddedAddr & mascaraDesplz;
   uint64_t porLeer = size;
-  std::vector<MySRAMCacheEntry> linea;
+  
   while(porLeer)
-  {
+  { 
     if(!memoria.count(tag))
-    return false;
+      return false;
 
-    //Leer datos de la dirección (alineada a TAMANYO Bytes)
-    linea = memoria[tag];
+    porLeer = porLeer - (TAMANYO - desplz);
+    if(porLeer < 1)
+      porLeer = 0;
 
-    //Comprobar que todos los valores son válidos
-    int i = 0;
-    for(;i + desplz < TAMANYO && porLeer; ++i)
-    {
-      if(!(linea[i+desplz].getVal())) return false;
-      --porLeer;
-    }
+    moddedAddr += (TAMANYO - desplz);
 
-    /*
-    *   Actualizar la dirección añadiendo los bytes que hemos escrito + 1
-    *   para indicar que queremos empezar a leer la primera palabra del 
-    *   siguiente bloque alineado con TAMANYO bytes.
-    */
-    moddedAddr +=  i;
-
-    //Calcular la nueva etiqueta y el nuevo desplazamiento
     tag = moddedAddr & mascaraDir;
     desplz = moddedAddr & mascaraDesplz;
-
-  }
+  }  
 
   return true;
 }
@@ -64,13 +50,14 @@ uint8_t* MySRAMCache::readData(uint64_t addr, uint64_t size)
     int i = 0;
     for(;i + desplz < TAMANYO && porLeer; i++)
     {
-      rv[posBaseRV + i] = linea[i + desplz].getDato();
+      
+      if(linea[i + desplz].getVal())
+        rv[posBaseRV + i] = linea[i + desplz].getDato();
+      else
+        rv[posBaseRV + i] = 0;
       --porLeer;
     }
     posBaseRV = i;
-
-    //Actualizar LRU
-    //LRU->push(tag);
     
     /*
     *   Actualizar la dirección añadiendo los bytes que hemos escrito + 1
@@ -90,7 +77,7 @@ uint8_t* MySRAMCache::readData(uint64_t addr, uint64_t size)
 bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
 {
   assert(data != 0x0);
-  
+  ++conteoLlamadas;
   uint64_t moddedAddr = addr;
   uint64_t tag = moddedAddr & mascaraDir;
   uint64_t desplz = moddedAddr & mascaraDesplz;
@@ -113,16 +100,13 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
       for(; i + desplz < TAMANYO && porEscribir; ++i)
       {
         MySRAMCacheEntry datoAGuardar(data[i + posBaseData]);
-        linea[i + desplz] = datoAGuardar;
+        linea[i+desplz] = datoAGuardar;
         --porEscribir;
       }
       posBaseData = i;
 
       //Guardar la linea modificada
       memoria[tag] = linea;
-
-      //Actualizar LRU
-      //LRU->push(tag);
 
       /*
       *   Actualizar la dirección añadiendo los bytes que hemos escrito + 1
@@ -143,9 +127,18 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
 
       //Añadir los datos a esta nueva línea
       int i = 0;
-      for(; i + desplz < TAMANYO && porEscribir ; ++i)
+      for(; i < TAMANYO ; ++i)
       {
-        wv[i+desplz] = MySRAMCacheEntry(data[i]);
+        wv[i] = MySRAMCacheEntry(0);
+      }
+
+      //Añadir los datos a esta nueva línea
+      for(i = 0; i + desplz < TAMANYO && porEscribir ; ++i)
+      {
+        if(&wv + i + desplz != 0)
+          wv[i+desplz] = MySRAMCacheEntry(data[i]);
+        else
+          wv[i+desplz] = MySRAMCacheEntry(0);
         --porEscribir;
       }
 
@@ -153,17 +146,12 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
        * No cabría una linea nueva y por lo tanto
        * habría que sustituir una existente por la nueva
        */
-      //Revisar esto con el debugger sin el bucle while
       if(currSize + 1 > maxSize)
       {
         uint64_t indexToBeReplaced = rand() % maxSize; //[0, maxSize - 1]
         uint64_t tagToBeReplaced = dirArray[indexToBeReplaced];
+        
         invalidateData(tagToBeReplaced,size);
-        //while(!invalidateData(tagToBeReplaced))
-        //{
-        //  indexToBeReplaced = rand() % maxSize; //[0, maxSize - 1]
-        //  tagToBeReplaced = dirArray[indexToBeReplaced];
-        //}
 
         dirArray[indexToBeReplaced] = tag;
 
@@ -177,9 +165,6 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
 
       //Guardar la línea nueva
       memoria[tag] = wv;
-
-      //Actualizar LRU
-      //LRU->push(tag);
 
       /*
       *   Actualizar la dirección añadiendo los bytes que hemos escrito + 1
@@ -203,23 +188,12 @@ bool MySRAMCache::invalidateData(uint64_t addr, uint64_t size)
   
   if(!hasData(tag,size))
   {
-    std::cout << "La dirección " << tag << " no se encuentra en la caché.\n";
-    std::cout << "Tamaños actuales:\n";
-    std::cout << "maxSize = " << maxSize << std::endl;
-    std::cout << "currSize = " << currSize << std::endl;
-    std::cout << "memoria = " << memoria.size() << std::endl;
-    assert(memoria.size() < maxSize);
-    assert(currSize < maxSize);
     return false;
   }
-  /* Eliminar de LRU.*/
-  //LRU->mvToHead(tag);
-  //LRU->pop();
 
   /* Eliminar de memoria*/
   memoria.erase(tag);
   --currSize;
-  //assert(currSize < maxSize);
   return true;
 
 }

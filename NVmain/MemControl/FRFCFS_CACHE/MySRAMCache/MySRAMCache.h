@@ -25,6 +25,8 @@ class MySRAMCacheEntry
   public:
     MySRAMCacheEntry( )
     {
+      dato = 0;
+      val[0] = 0; 
 
     };
 
@@ -127,10 +129,11 @@ class MySRAMCache
   private:
     memoria_cache memoria;                        //Variable que almacena los datos
     //MyUIntStack *LRU;                             //Variable que representa LRU
-    uint64_t mascaraDir =    0xFFFFFFFFFFFFFFC0;  //Variable para la etiqueta
-    uint64_t mascaraDesplz = 0x000000000000003F;  //Variable para el desplazamiento
+    const uint64_t mascaraDir =    18446744073709551552ULL;  //Variable para la etiqueta
+    const uint64_t mascaraDesplz = 0x000000000000003F;  //Variable para el desplazamiento
     uint64_t maxSize, currSize;                   //Variables para gestionar el tamaño
     uint64_t latenciaCiclos;                      //Variable que contiene la latencia
     std::vector<uint64_t> dirArray;
+	  uint64_t conteoLlamadas = 0;				  //Variables para ayudar con el debug		
   protected:
 };
