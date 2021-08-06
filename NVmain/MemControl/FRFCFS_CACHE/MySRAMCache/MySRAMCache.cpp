@@ -12,7 +12,7 @@ bool MySRAMCache::hasData(uint64_t addr, uint64_t size)
   uint64_t tag = moddedAddr & mascaraDir;
   uint64_t desplz = moddedAddr & mascaraDesplz;
   uint64_t porLeer = size;
-  
+
   while(porLeer)
   { 
     if(!memoria.count(tag))
@@ -151,7 +151,7 @@ bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
         uint64_t indexToBeReplaced = rand() % maxSize; //[0, maxSize - 1]
         uint64_t tagToBeReplaced = dirArray[indexToBeReplaced];
         
-        invalidateData(tagToBeReplaced,size);
+        invalidateData(tagToBeReplaced,porEscribir);
 
         dirArray[indexToBeReplaced] = tag;
 
