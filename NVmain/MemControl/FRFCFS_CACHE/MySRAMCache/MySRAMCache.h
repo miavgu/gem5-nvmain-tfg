@@ -112,6 +112,7 @@ class MySRAMCache
     * Invalida la palabra de una dirección de memoria
     *
     * @param addr Dirección cuya palabra se quiere invalidar.
+    * @param size Numero de bytes a invalidar.
     * @return TRUE si no ha habido problemas. FALSE si no.
     */
     bool invalidateData(uint64_t addr, uint64_t size);
@@ -133,7 +134,6 @@ class MySRAMCache
     const uint64_t mascaraDesplz = 0x000000000000003F;  //Variable para el desplazamiento
     uint64_t maxSize, currSize;                   //Variables para gestionar el tamaño
     uint64_t latenciaCiclos;                      //Variable que contiene la latencia
-    std::vector<uint64_t> dirArray;
-	  uint64_t conteoLlamadas = 0;				  //Variables para ayudar con el debug		
+    std::vector<uint64_t> dirArray;		  //Vector para reemplazo RANDOM.	
   protected:
 };
