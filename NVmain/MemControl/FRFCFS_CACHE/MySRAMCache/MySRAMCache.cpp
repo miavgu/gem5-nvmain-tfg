@@ -19,7 +19,7 @@ bool MySRAMCache::hasData(uint64_t addr, uint64_t size)
       return false;
 
     porLeer = porLeer - (TAMANYO - desplz);
-    if(porLeer < 1)
+    if(porLeer < 1) //Asegurar el valor a 0 para finalizar el bucle
       porLeer = 0;
 
     moddedAddr += (TAMANYO - desplz);
@@ -77,7 +77,6 @@ uint8_t* MySRAMCache::readData(uint64_t addr, uint64_t size)
 bool MySRAMCache::writeData(uint64_t addr, uint8_t* data, uint64_t size)
 {
   assert(data != 0x0);
-  ++conteoLlamadas;
   uint64_t moddedAddr = addr;
   uint64_t tag = moddedAddr & mascaraDir;
   uint64_t desplz = moddedAddr & mascaraDesplz;
