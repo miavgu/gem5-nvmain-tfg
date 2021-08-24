@@ -165,8 +165,8 @@ bool FRFCFS_CACHE::IssueCommand( NVMainRequest *req )
         if(DataCache->hasData(issueReqAddress,
            issueReqSize))
     	{
-            mem_reads++;
-	        ++myCacheHits;
+            ++mem_reads;
+	    ++myCacheHits;
             uint64_t proximoAcceso = req->arrivalCycle
                                 + DataCache->getLatenciaCiclos();
 
